@@ -22,10 +22,6 @@ export PATH="${env_install_path}/bin:${micromamba_install_path}/bin:${PATH}"
 # SANITY CHECKS
 
 # check that tools required exist on the system PATH
-if ! command -v python3 >/dev/null; then
-    echo "ERROR: python3 not in PATH, make sure you have Python 3.x installed." >&2
-    exit 1
-fi
 if ! command -v curl >/dev/null; then
     echo "ERROR: curl not in PATH, make sure you have curl installed." >&2
     exit 1
