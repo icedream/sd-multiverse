@@ -1,4 +1,5 @@
 !models/*/*.txt
+!models/vae-approx/model.pt
 models/*/*.*
 
 # out of tree install path
