@@ -34,10 +34,6 @@ if ! command -v bzip2 >/dev/null; then
     echo "ERROR: bzip2 not in PATH, make sure you have bzip2 installed." >&2
     exit 1
 fi
-if ! command -v lspci >/dev/null; then
-    echo "ERROR: lspci not in PATH, make sure you have lspci installed." >&2
-    exit 1
-fi
 
 ###################
 # MICROMAMBA/CONDA
