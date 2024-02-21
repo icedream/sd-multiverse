@@ -279,10 +279,83 @@ launch_args=(
     --listen
 )
 
-# Check and modify prerequisites/env according to GPU
+# Load an up to date version of PCI IDs to compare GPUs against.
+pci_ids_file=""
+update_pci_ids() {
+    pci_ids_url="https://pci-ids.ucw.cz/v2.2/pci.ids.bz2"
+    echo "Downloading latest PCI ID database..." >&2
+    mkdir -p "$out_of_tree_install_path"
+    curl -#fL -o "$out_of_tree_install_path/pci.ids.bz2" "${pci_ids_url}"
+    bzcat "$out_of_tree_install_path/pci.ids.bz2" > "$out_of_tree_install_path/pci.ids"
+    rm -f "$out_of_tree_install_path/pci.ids.bz2"
+}
+lookup_pci_dev_name() {
+    awk -v vendor="$1" -v device="$2" '
+BEGIN { vendor_found = 0; device_found = 0; }
+/^$/ { next; }
+/^[0-9a-f]{4}  / {
+  if ($1 == vendor) {
+    vendor_found = 1;
+    vendor_name = substr($0, index($0,$2));
+  } else {
+    vendor_found = 0;
+  }
+}
+vendor_found && /^[[:space:]]+[0-9a-f]{4}  / {
+  if ($1 == device) {
+    device_found = 1;
+    device_name = substr($0, index($0,$2));
+    exit;
+  }
+}
+END {
+  if (device_found) {
+    print vendor_name " - " device_name;
+  }
+}' "${pci_ids_file}"
+}
+for known_pci_ids_file in \
+    /usr/share/hwdata/pci.ids \
+    /usr/share/misc/pci.ids \
+    ; do
+    if [ -f "$known_pci_ids_file" ]; then
+        for expected_desc in "Navi 1" "Navi 2" "Navi 3" "Renoir" "AMD" "NVIDIA" "Intel Arc"; do
+            if ! grep -q "$expected_desc" "$known_pci_ids_file"; then
+                break
+            fi
+        done
+        if [ $? -eq 0 ]; then
+            pci_ids_file="$known_pci_ids_file"
+            break
+        else
+            echo "WARNING: PCI ID database $known_pci_ids_file does not contain $expected_desc IDs, relying on a more up to date one instead. Make sure your system is up to date." >&2
+        fi
+    fi
+done
+if [ -z "$pci_ids_file" ]; then
+    pci_ids_file="$out_of_tree_install_path/pci.ids"
+    if [ ! -f "$pci_ids_file" ] || [ $(( $(date '+%s') - $(stat -c %Y "pci.ids") )) -gt 864000 ]; then
+        # last update was 10 days ago, an update shouldn't hurt now
+        update_pci_ids
+    fi
+fi
+
+# Check and modify prerequisites/env according to GPU.
 i=0
 used_major_gfx_card=""
-while read -r gpu_info; do
+while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
+    case "$driver" in
+    nvidia|amdgpu|i915)
+        # graphics driver
+        ;;
+    *)
+        # not a graphics driver
+        continue
+        ;;
+    esac
+    vid=$(cut -c 1-4 <<<"$devid")
+    did=$(cut -c 5-8 <<<"$devid")
+    gpu_info=$(lookup_pci_dev_name "$vid" "$did")
     case "$gpu_info" in
         *"Navi 1"*)
             used_major_gfx_card="$gpu_info"
@@ -345,10 +418,10 @@ while read -r gpu_info; do
             used_major_gfx_card="$gpu_info"
         ;;
         *)
-            echo "GPU is probably not supported, ignoring: $gpu_info" >&2
+            echo "GPU is probably not supported, ignoring: $gpu_info ($vid:$did) " >&2
         ;;
     esac
-done < <(lspci 2>/dev/null | grep -E "VGA|Display")
+done < /proc/bus/pci/devices
 
 echo "Major graphics card: $used_major_gfx_card" >&2
 echo "Overrides:" >&2
