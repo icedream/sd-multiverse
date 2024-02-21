@@ -1,0 +1,1 @@
+Supported extensions: .ckpt or .safetensors

@@ -1,0 +1,5 @@
+!models/*/*.txt
+models/*/*.*
+
+# out of tree install path
+/install/

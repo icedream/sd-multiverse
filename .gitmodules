@@ -1,0 +1,12 @@
+[submodule "apps/AUTOMATIC1111/stable-diffusion-webui"]
+	path = apps/AUTOMATIC1111/stable-diffusion-webui
+	url = https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+[submodule "apps/easydiffusion/easydiffusion"]
+	path = apps/easydiffusion/easydiffusion
+	url = https://github.com/easydiffusion/easydiffusion.git
+[submodule "apps/Illyasviel/stable-diffusion-webui-forge"]
+	path = apps/Illyasviel/stable-diffusion-webui-forge
+	url = https://github.com/lllyasviel/stable-diffusion-webui-forge.git
+[submodule "apps/lshqqytiger/stable-diffusion-webui-directml"]
+	path = apps/lshqqytiger/stable-diffusion-webui-directml
+	url = https://github.com/lshqqytiger/stable-diffusion-webui-directml
