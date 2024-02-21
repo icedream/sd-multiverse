@@ -18,6 +18,8 @@ Also make sure to install any requirements needed by the python app you want to
 run itself (usually includes correct GPU drivers and some additional files to
 generate anything with).
 
+Debian/Ubuntu: `apt install --no-install-recommends -y ca-certificates git tar bzip2 pciutils curl`
+
 ## How to use
 
 1.  (optional:) Clone/download your own version or fork of SD-UI that you want to
