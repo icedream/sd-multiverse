@@ -440,7 +440,7 @@ if [ -f launch.py ]; then
     pip install --upgrade-strategy only-if-needed -r <(echo "$requirements_txt")
 
     # replace models directory with symlink to our shared one
-    if [ ! -l models ] && [ -d models ]; then
+    if [ ! -L models ] && [ -d models ]; then
         rm -rf models
         ln -s "$models_path" models
     fi
