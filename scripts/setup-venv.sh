@@ -126,11 +126,7 @@ if ! micromamba_version_matches_wanted_version; then
 fi
 micromamba_install_packages=()
 
-# set up venv
-
-# python3 -m venv venv
-# source venv/bin/activate
-# TODO - figure out most suitable python version for SD app
+# set up env prefix
 if [ ! -e "$env_install_path" ]; then
     micromamba create -y --prefix "$env_install_path" || (
         echo "ERROR: unable to create the install environment"
@@ -155,6 +151,7 @@ if ! git_is_at_expected_version; then
 fi
 
 # check python3
+# TODO - figure out most suitable python version for SD app
 wanted_python_version="3.10.13"
 python_is_at_expected_version() {
     local raw_version python_version
@@ -355,7 +352,7 @@ done < <(lspci 2>/dev/null | grep -E "VGA|Display")
 
 echo "Major graphics card: $used_major_gfx_card" >&2
 echo "Overrides:" >&2
-env | grep -E '^(HSA_|HIP_|FORCE_FULL_PRECISION)' >&2
+env | grep -E '^(HSA_|HIP_|FORCE_FULL_PRECISION)' || true >&2
 
 if [ -f launch.py ]; then
     # stable-diffusion-ui

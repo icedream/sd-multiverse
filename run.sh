@@ -8,11 +8,11 @@ root_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # read app path from command line
 : "${app_path:=${1:-}}"
-shift 1
 if [ -z "$app_path" ]; then
     echo "ERROR: Must pass path to repository of an app (any version/fork of EasyDiffusion or Stable-Diffusion-UI) to run." >&2
     exit 1
 fi
+shift 1
 if [ ! -d "$app_path" ]; then
     echo "ERROR: Given app path does not exist." >&2
     exit 1
