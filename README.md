@@ -45,6 +45,9 @@ You can tell `run.sh` to use these known app versions:
 - for lshqqytiger's stable-diffusion-webui-directml: `./run.sh apps/lshqqytiger/stable-diffusion-webui-directml`
 - for easydiffusion: `./run.sh apps/easydiffusion/easydiffusion`
 
+**Note:** This will not work if you download this repository as an archive
+instead. Supply your own copy in this case.
+
 ## What happens behind the scenes
 
 1.  `run.sh` checks whether the app you passed is a submodule of this repo. If
