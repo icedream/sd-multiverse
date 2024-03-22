@@ -10,3 +10,6 @@
 [submodule "apps/lshqqytiger/stable-diffusion-webui-directml"]
 	path = apps/lshqqytiger/stable-diffusion-webui-directml
 	url = https://github.com/lshqqytiger/stable-diffusion-webui-directml
+[submodule "apps/comfyanonymous/ComfyUI"]
+	path = apps/comfyanonymous/ComfyUI
+	url = https://github.com/comfyanonymous/ComfyUI.git

@@ -356,6 +356,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             export FORCE_FULL_PRECISION=yes
             override_requirement torch '==1.13.1+rocm5.2'
             override_requirement torchvision '==0.14.1+rocm5.2'
+            override_requirement torchaudio '==0.13.1+rocm5.2'
             add_index 'https://download.pytorch.org/whl/rocm5.2'
             pip uninstall -y xformers
         ;;
@@ -365,6 +366,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             export HSA_OVERRIDE_GFX_VERSION="10.3.0"
             override_requirement torch '==2.0.1+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
+            override_requirement torchaudio '==2.0.1+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             pip uninstall -y xformers
         ;;
@@ -378,6 +380,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             export HSA_OVERRIDE_GFX_VERSION="11.0.0"
             override_requirement torch '==2.2.0+rocm5.6'
             override_requirement torchvision '==0.17.0+rocm5.6'
+            override_requirement torchaudio '==2.2.0+rocm5.6'
             add_index 'https://download.pytorch.org/whl/rocm5.6'
             pip uninstall -y xformers
         ;;
@@ -386,6 +389,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             override_requirement torch '==2.0.1+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
+            override_requirement torchaudio '==2.0.1+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             # printf "Experimental support for Renoir: make sure to have at least 4GB of VRAM and 10GB of RAM or enable cpu mode: --use-cpu all --no-half"
             pip uninstall -y xformers
@@ -398,6 +402,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             # all other AMD cards (e.g. integrated or non-consumer ones)
             override_requirement torch '==2.0.1+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             pip uninstall -y xformers
         ;;
@@ -447,6 +452,58 @@ if [ -f launch.py ]; then
 
     # gdb --args 
     TORCH_COMMAND="true" python -u launch.py "${launch_args[@]}"
+elif [ -f main.py ]; then
+    # comfyUI
+
+    echo -e "Requirements:\n\n$requirements_txt\n\n" >&2
+    pip install --upgrade-strategy only-if-needed -r <(echo "$requirements_txt")
+
+    # set up search path
+    #if [ ! -f extra_model_paths.yaml ]; then
+    #    cp extra_model_paths.yaml.example extra_model_paths.yaml
+    #fi
+    cat >extra_model_paths.yaml <<EOF
+#config for a1111 ui
+#all you have to do is change the base_path to where yours is installed
+a111:
+    #base_path: path/to/stable-diffusion-webui/
+
+    checkpoints: ${models_path}/stable-diffusion
+    configs: ${models_path}/stable-diffusion
+    vae: ${models_path}/vae
+    loras: |
+         ${models_path}/lore
+         ${models_path}/lycoris
+    upscale_models: |
+                  ${models_path}/esrgan
+                  ${models_path}/realesrgan
+                  ${models_path}/swinir
+    embeddings: ${models_path}/embeddings
+    hypernetworks: ${models_path}/hypernetworks
+    controlnet: ${models_path}/ControlNet
+
+#config for comfyui
+#your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
+
+comfyui:
+     base_path: ${root_path}
+     checkpoints: models/stable-diffusion/
+     clip: models/clip/
+     clip_vision: models/clip_vision/
+     configs: models/configs/
+     controlnet: models/controlnet/
+     embeddings: models/embeddings/
+     loras: models/lora/
+     upscale_models: models/upscale_models/
+     vae: models/vae/
+
+other_ui:
+#    base_path: path/to/ui
+    checkpoints: ${models_path}/stable-diffusion
+#    gligen: models/gligen
+#    custom_nodes: path/custom_nodes
+EOF
+    TORCH_COMMAND="true" python -u main.py "$@"
 elif [ -f scripts/start.sh ]; then
     # easydiffusion
     
