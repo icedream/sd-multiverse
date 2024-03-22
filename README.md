@@ -11,14 +11,17 @@ Since this script is made to be as quick and common of an entrypoint as possible
 you only need basic tools. I recommend whatever version of them your operating
 system's package manager serves you with.
 
-- micromamba or curl+tar+bzip2 (which will download micromamba for you)
-- lspci from pciutils (to detect GPU)
+- either **micromamba** or **curl**, **tar**, and **bzip2** (which will download micromamba for you)
+
+Debian/Ubuntu: `apt install --no-install-recommends -y ca-certificates git tar bzip2 curl`
 
 Also make sure to install any requirements needed by the python app you want to
-run itself (usually includes correct GPU drivers and some additional files to
-generate anything with).
+run itself. That usually includes correct GPU drivers and some additional files
+to generate anything with.
 
-Debian/Ubuntu: `apt install --no-install-recommends -y ca-certificates git tar bzip2 pciutils curl`
+For **AMD** on **Ubuntu** you want to check out [Ubuntu native installation](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/how-to/native-install/ubuntu.html) for AMD ROCM.
+
+You may just need these packages: `rocm-hip-libraries rocm-language-runtime`
 
 ## How to use
 

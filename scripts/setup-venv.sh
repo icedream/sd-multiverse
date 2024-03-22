@@ -18,23 +18,6 @@ env_install_path="${env_install_root_path}/${env_name}"
 
 export PATH="${env_install_path}/bin:${micromamba_install_path}/bin:${PATH}"
 
-################
-# SANITY CHECKS
-
-# check that tools required exist on the system PATH
-if ! command -v curl >/dev/null; then
-    echo "ERROR: curl not in PATH, make sure you have curl installed." >&2
-    exit 1
-fi
-if ! command -v tar >/dev/null; then
-    echo "ERROR: tar not in PATH, make sure you have tar installed." >&2
-    exit 1
-fi
-if ! command -v bzip2 >/dev/null; then
-    echo "ERROR: bzip2 not in PATH, make sure you have bzip2 installed." >&2
-    exit 1
-fi
-
 ###################
 # MICROMAMBA/CONDA
 
@@ -48,6 +31,20 @@ micromamba_version_matches_wanted_version() {
     return 0
 }
 install_micromamba() {
+    # check that tools required exist on the system PATH
+    if ! command -v curl >/dev/null; then
+        echo "ERROR: curl not in PATH, make sure you have curl installed." >&2
+        exit 1
+    fi
+    if ! command -v tar >/dev/null; then
+        echo "ERROR: tar not in PATH, make sure you have tar installed." >&2
+        exit 1
+    fi
+    if ! command -v bzip2 >/dev/null; then
+        echo "ERROR: bzip2 not in PATH, make sure you have bzip2 installed." >&2
+        exit 1
+    fi
+
     mkdir -p "${out_of_tree_install_path}"
     # local archive_url archive_signature_url
     local binary_url binary_signature_url
