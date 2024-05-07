@@ -157,7 +157,7 @@ if ! python_is_at_expected_version; then
 fi
 
 # check conda
-wanted_conda_version="23.9.0"
+wanted_conda_version="24.4.0"
 conda_is_at_expected_version() {
     local raw_version conda_version
     if ! command -v conda >/dev/null; then
