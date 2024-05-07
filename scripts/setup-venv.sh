@@ -124,7 +124,7 @@ if [ ! -e "$env_install_path" ]; then
 fi
 
 # check git
-wanted_git_version="2.43.0"
+wanted_git_version="2.45.0"
 git_is_at_expected_version() {
     local raw_version git_version
     if ! command -v git >/dev/null; then
