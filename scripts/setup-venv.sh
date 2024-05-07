@@ -266,6 +266,7 @@ launch_args=(
     #--skip-prepare-environment
     --no-half-vae
     --listen
+    "$@"
 )
 
 # Load an up to date version of PCI IDs to compare GPUs against.
