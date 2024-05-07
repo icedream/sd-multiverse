@@ -13,3 +13,6 @@
 [submodule "apps/comfyanonymous/ComfyUI"]
 	path = apps/comfyanonymous/ComfyUI
 	url = https://github.com/comfyanonymous/ComfyUI.git
+[submodule "apps/vladmandic/automatic"]
+	path = apps/vladmandic/automatic
+	url = https://github.com/vladmandic/automatic.git

@@ -44,6 +44,7 @@ You can tell `run.sh` to use these known app versions:
 - for Illyasviel's stable-diffusion-webui-forge: `./run.sh apps/Illyasviel/stable-diffusion-webui-forge`
 - for lshqqytiger's stable-diffusion-webui-directml: `./run.sh apps/lshqqytiger/stable-diffusion-webui-directml`
 - for ComfyUI: `./run.sh apps/comfyanonymous/ComfyUI`
+- for SD.Next: `./run.sh apps/vladmandic/automatic`
 - for easydiffusion: `./run.sh apps/easydiffusion/easydiffusion`
 
 **Note:** This will not work if you download this repository as an archive
