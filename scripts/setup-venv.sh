@@ -369,17 +369,14 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             pip uninstall -y xformers
         ;;
         *"Navi 3"*)
-            # Navi 3 needs at least 5.5 which is only on the torch 2.1.0 release candidates right now
-            # override_requirement torch '==2.3.0.dev20240111+rocm5.6'
-            # override_requirement torchvision '==0.18.0.dev20240209+rocm5.6'
-            # add_index 'https://download.pytorch.org/whl/nightly/rocm5.6'
+            # Navi 3 needs at least 5.5
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="11.0.0"
-            override_requirement torch '==2.2.0+rocm5.6'
-            override_requirement torchvision '==0.17.0+rocm5.6'
-            override_requirement torchaudio '==2.2.0+rocm5.6'
-            add_index 'https://download.pytorch.org/whl/rocm5.6'
+            override_requirement torch '==2.3.0+rocm6.0'
+            override_requirement torchvision '==0.18.0+rocm6.0'
+            override_requirement torchaudio '==2.3.0+rocm6.0'
+            add_index 'https://download.pytorch.org/whl/rocm6.0'
             pip uninstall -y xformers
         ;;
         *"Renoir"*)
