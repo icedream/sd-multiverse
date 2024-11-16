@@ -1,6 +1,6 @@
-!models/*/*.txt
-!models/vae-approx/model.pt
 models/*/*.*
+models/vae-approx/model.pt
+!models/*/*.txt
 
 # out of tree install path
 /install/
