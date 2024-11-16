@@ -214,13 +214,16 @@ conda activate
 # SANITY CHECKS
 
 # install dependencies
-if [ ! -f requirements.txt ]; then
-    echo "ERROR: No requirements.txt found." >&2
+if [ -f requirements.txt ]; then
+    # standard python requirements list
+    requirements_txt=$(cat requirements.txt)
+elif [ -f requirements_versions.txt ]; then
+    # https://github.com/lllyasviel/stable-diffusion-webui-forge/commit/b57573c8da9e23fe8245f7dbb5e3f5e445aa65b2#diff-2284b86f286dc7e0ea4bd09a0ec20c78fbb17d6724d7f0053e78428d0715bbb1
+    requirements_txt=$(cat requirements_versions.txt)
+else
+    echo "ERROR: No requirements.txt or requirements_versions.txt found." >&2
     exit 1
 fi
-requirements_txt=$(
-    cat requirements.txt
-)
 override_requirement() {
     local name version_req requirements_txt_old
     name="$1"
