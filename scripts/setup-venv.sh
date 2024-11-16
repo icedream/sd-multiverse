@@ -365,9 +365,9 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="10.3.0"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             pip uninstall -y xformers
         ;;
@@ -376,18 +376,18 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="11.0.0"
-            override_requirement torch '==2.3.0+rocm6.0'
-            override_requirement torchvision '==0.18.0+rocm6.0'
-            override_requirement torchaudio '==2.3.0+rocm6.0'
+            override_requirement torch '==2.4.1+rocm6.0'
+            override_requirement torchvision '==0.19.1+rocm6.0'
+            override_requirement torchaudio '==2.4.1+rocm6.0'
             add_index 'https://download.pytorch.org/whl/rocm6.0'
             pip uninstall -y xformers
         ;;
         *"Renoir"*)
             export HSA_OVERRIDE_GFX_VERSION="9.0.0"
             used_major_gfx_card="$gpu_info"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             # printf "Experimental support for Renoir: make sure to have at least 4GB of VRAM and 10GB of RAM or enable cpu mode: --use-cpu all --no-half"
             pip uninstall -y xformers
@@ -398,7 +398,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
                 continue
             fi
             # all other AMD cards (e.g. integrated or non-consumer ones)
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
             override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
