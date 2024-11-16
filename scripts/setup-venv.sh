@@ -434,7 +434,8 @@ if [ -f launch.py ]; then
     override_requirement 'git+https://github.com/openai/CLIP.git' '@a1d071733d7111c9c014f024669f959182114e33'
 
     # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/11853
-    override_requirement pydantic '==1.10.11'
+    # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/15662
+    override_requirement fastapi '==0.110.3'
 
     # HACK - missing dependency for repositories
     override_requirement gdown
