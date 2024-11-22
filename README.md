@@ -42,7 +42,7 @@ You can tell `run.sh` to use these known app versions:
 
 - for AUTOMATIC1111's stable-diffusion-webui: `./run.sh apps/AUTOMATIC1111/stable-diffusion-webui`
 - for Illyasviel's stable-diffusion-webui-forge: `./run.sh apps/Illyasviel/stable-diffusion-webui-forge`
-- for lshqqytiger's stable-diffusion-webui-directml: `./run.sh apps/lshqqytiger/stable-diffusion-webui-directml`
+- for lshqqytiger's stable-diffusion-webui-amdgpu: `./run.sh apps/lshqqytiger/stable-diffusion-webui-amdgpu`
 - for ComfyUI: `./run.sh apps/comfyanonymous/ComfyUI`
 - for easydiffusion: `./run.sh apps/easydiffusion/easydiffusion`
 

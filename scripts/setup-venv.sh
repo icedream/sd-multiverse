@@ -214,13 +214,16 @@ conda activate
 # SANITY CHECKS
 
 # install dependencies
-if [ ! -f requirements.txt ]; then
-    echo "ERROR: No requirements.txt found." >&2
+if [ -f requirements.txt ]; then
+    # standard python requirements list
+    requirements_txt=$(cat requirements.txt)
+elif [ -f requirements_versions.txt ]; then
+    # https://github.com/lllyasviel/stable-diffusion-webui-forge/commit/b57573c8da9e23fe8245f7dbb5e3f5e445aa65b2#diff-2284b86f286dc7e0ea4bd09a0ec20c78fbb17d6724d7f0053e78428d0715bbb1
+    requirements_txt=$(cat requirements_versions.txt)
+else
+    echo "ERROR: No requirements.txt or requirements_versions.txt found." >&2
     exit 1
 fi
-requirements_txt=$(
-    cat requirements.txt
-)
 override_requirement() {
     local name version_req requirements_txt_old
     name="$1"
@@ -362,9 +365,9 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="10.3.0"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             pip uninstall -y xformers
         ;;
@@ -373,18 +376,18 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="11.0.0"
-            override_requirement torch '==2.3.0+rocm6.0'
-            override_requirement torchvision '==0.18.0+rocm6.0'
-            override_requirement torchaudio '==2.3.0+rocm6.0'
+            override_requirement torch '==2.4.1+rocm6.0'
+            override_requirement torchvision '==0.19.1+rocm6.0'
+            override_requirement torchaudio '==2.4.1+rocm6.0'
             add_index 'https://download.pytorch.org/whl/rocm6.0'
             pip uninstall -y xformers
         ;;
         *"Renoir"*)
             export HSA_OVERRIDE_GFX_VERSION="9.0.0"
             used_major_gfx_card="$gpu_info"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             # printf "Experimental support for Renoir: make sure to have at least 4GB of VRAM and 10GB of RAM or enable cpu mode: --use-cpu all --no-half"
             pip uninstall -y xformers
@@ -395,7 +398,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
                 continue
             fi
             # all other AMD cards (e.g. integrated or non-consumer ones)
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
             override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
@@ -431,7 +434,8 @@ if [ -f launch.py ]; then
     override_requirement 'git+https://github.com/openai/CLIP.git' '@a1d071733d7111c9c014f024669f959182114e33'
 
     # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/11853
-    override_requirement pydantic '==1.10.11'
+    # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/15662
+    override_requirement fastapi '==0.110.3'
 
     # HACK - missing dependency for repositories
     override_requirement gdown
