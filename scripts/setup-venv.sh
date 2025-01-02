@@ -435,7 +435,11 @@ if [ -f launch.py ]; then
 
     # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/11853
     # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/15662
-    override_requirement fastapi '==0.110.3'
+    if grep -q requirements*.txt 'fastapi.\+0.9\?\..\+'; then
+      override_requirement fastapi '==0.110.3'
+    elif ! grep -qF requirements*.txt 'pydantic'; then
+      override_requirement pydantic '==1.10.11'
+    fi
 
     # HACK - missing dependency for repositories
     override_requirement gdown
