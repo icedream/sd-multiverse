@@ -9,7 +9,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 root_path="$(readlink -f "${SCRIPT_DIR}/..")"
 out_of_tree_install_path="${root_path}/install"
 micromamba_install_path="${out_of_tree_install_path}/micromamba"
-micromamba_version="1.5.6-0"
+micromamba_version="2.0.5-0"
 micromamba_version_main="${micromamba_version%-*}"
 models_path="$root_path/models"
 env_install_root_path="${out_of_tree_install_path}/env"
@@ -141,7 +141,7 @@ fi
 
 # check python3
 # TODO - figure out most suitable python version for SD app
-wanted_python_version="3.10.13"
+wanted_python_version="3.12.8"
 python_is_at_expected_version() {
     local raw_version python_version
     if ! command -v python3 >/dev/null; then
@@ -157,7 +157,7 @@ if ! python_is_at_expected_version; then
 fi
 
 # check conda
-wanted_conda_version="24.4.0"
+wanted_conda_version="25.1.1"
 conda_is_at_expected_version() {
     local raw_version conda_version
     if ! command -v conda >/dev/null; then
@@ -174,7 +174,7 @@ fi
 
 # check rust
 # 1.74.0+ required by clap_derive v4.5.0
-wanted_rust_version="1.74.0"
+wanted_rust_version="1.89.0"
 rust_is_at_expected_version() {
     local raw_version rust_version
     if ! command -v rustc >/dev/null; then
@@ -214,13 +214,16 @@ conda activate
 # SANITY CHECKS
 
 # install dependencies
-if [ ! -f requirements.txt ]; then
-    echo "ERROR: No requirements.txt found." >&2
+if [ -f requirements.txt ]; then
+    # standard python requirements list
+    requirements_txt=$(cat requirements.txt)
+elif [ -f requirements_versions.txt ]; then
+    # https://github.com/lllyasviel/stable-diffusion-webui-forge/commit/b57573c8da9e23fe8245f7dbb5e3f5e445aa65b2#diff-2284b86f286dc7e0ea4bd09a0ec20c78fbb17d6724d7f0053e78428d0715bbb1
+    requirements_txt=$(cat requirements_versions.txt)
+else
+    echo "ERROR: No requirements.txt or requirements_versions.txt found." >&2
     exit 1
 fi
-requirements_txt=$(
-    cat requirements.txt
-)
 override_requirement() {
     local name version_req requirements_txt_old
     name="$1"
@@ -239,7 +242,7 @@ override_requirement() {
             grep -vE "^${name}\b" <<<"$requirements_txt"
             echo "$name$version_req"
         )
-        fi
+    fi
     if command -v diff >/dev/null; then
         diff -U0 <(echo "$requirements_txt_old") <(echo "$requirements_txt") || true
     fi
@@ -362,9 +365,9 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="10.3.0"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             pip uninstall -y xformers
         ;;
@@ -373,18 +376,18 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
             used_major_gfx_card="$gpu_info"
             export HIP_VISIBLE_DEVICES=$i
             export HSA_OVERRIDE_GFX_VERSION="11.0.0"
-            override_requirement torch '==2.3.0+rocm6.0'
-            override_requirement torchvision '==0.18.0+rocm6.0'
-            override_requirement torchaudio '==2.3.0+rocm6.0'
-            add_index 'https://download.pytorch.org/whl/rocm6.0'
+            override_requirement torch '==2.5.1+rocm6.2'
+            override_requirement torchvision '==0.20.1+rocm6.2'
+            override_requirement torchaudio '==2.5.1+rocm6.2'
+            add_index 'https://download.pytorch.org/whl/rocm6.2'
             pip uninstall -y xformers
         ;;
         *"Renoir"*)
             export HSA_OVERRIDE_GFX_VERSION="9.0.0"
             used_major_gfx_card="$gpu_info"
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
-            override_requirement torchaudio '==2.0.1+rocm5.4.2'
+            override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
             # printf "Experimental support for Renoir: make sure to have at least 4GB of VRAM and 10GB of RAM or enable cpu mode: --use-cpu all --no-half"
             pip uninstall -y xformers
@@ -395,7 +398,7 @@ while read -r devslot devid _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ driver _; do
                 continue
             fi
             # all other AMD cards (e.g. integrated or non-consumer ones)
-            override_requirement torch '==2.0.1+rocm5.4.2'
+            override_requirement torch '==2.0.2+rocm5.4.2'
             override_requirement torchvision '==0.15.2+rocm5.4.2'
             override_requirement torchaudio '==2.0.2+rocm5.4.2'
             add_index 'https://download.pytorch.org/whl/rocm5.4.2'
@@ -419,6 +422,11 @@ echo "Major graphics card: $used_major_gfx_card" >&2
 echo "Overrides:" >&2
 env | grep -E '^(HSA_|HIP_|FORCE_FULL_PRECISION)' || true >&2
 
+# general fixes
+# fix https://github.com/huggingface/tokenizers/issues/1485
+override_requirement tokenizers '==0.21.4'
+override_requirement transformers '==4.55.4'
+
 if [ -f launch.py ]; then
     # stable-diffusion-ui
 
@@ -428,10 +436,25 @@ if [ -f launch.py ]; then
 
     # HACK - do not install clip from pypi as that's the wrong one
     override_requirement clip remove
-    override_requirement 'git+https://github.com/openai/CLIP.git' '@a1d071733d7111c9c014f024669f959182114e33'
+    override_requirement 'git+https://github.com/openai/CLIP.git' '@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1'
+
+    # HACK - https://github.com/kijai/ComfyUI-SUPIR/issues/143
+    override_requirement open-clip-torch '==2.24.0'
 
     # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/11853
-    override_requirement pydantic '==1.10.11'
+    # HACK - https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/15662
+    if grep -q 'fastapi.\+0.9\?\..\+' requirements*.txt; then
+      override_requirement fastapi '==0.110.3'
+    elif ! grep -qF 'pydantic' requirements*.txt; then
+      #override_requirement pydantic '==1.10.11'
+      # HACK - https://github.com/pydantic/pydantic/issues/9637#issuecomment-2162873917
+      override_requirement pydantic '==1.10.16'
+    fi
+
+    # HACK - https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu/issues/533
+    # HACK - https://github.com/lshqqytiger/stable-diffusion-webui-amdgpu/issues/534
+    #override_requirement diffusers '==0.29.2'
+    #override_requirement transformers '==4.30.2'
 
     # HACK - missing dependency for repositories
     override_requirement gdown
